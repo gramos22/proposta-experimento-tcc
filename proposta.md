@@ -35,8 +35,8 @@ Tabela de versões e revisões:
 
 - Aderência metodológica
 - Aprovar mudanças de escopo
-- Validar instrumentos assegurar
-- Integridade dos dados
+- Validar instrumentos
+- Assegurar integridade dos dados
 
 ### 1.7 Projeto / produto / iniciativa relacionada 
 
@@ -85,56 +85,161 @@ Referências ligadas aos três pilares (Engajamento, Atividades, Qualidade).
 
 ## 3. Objetivos e questões (Goal / Question / Metric)
 
-### 3.1 Objetivo geral (Goal template)
-Preencha o objetivo geral usando um template claro (por exemplo, GQM), deixando explícito o que será analisado, com qual propósito, sob qual perspectiva e em qual contexto.
+### 3.1 Objetivo geral
+
+| Elemento      | Descrição                                                                 |
+|---------------|--------------------------------------------------------------------------|
+| Analisar      | Repositórios open-source populares que morreram                 |
+| Propósito     | Compreender fatores associados à essa morte                   |
+| Foco          | Sob os 3 pilares de engajamento, atividades de desenvolvimento e qualidade do código         |                                    |
+| Contexto      | Top 1000 repositórios por estrelas no GitHub                             |
 
 ### 3.2 Objetivos específicos
-Decomponha o objetivo geral em metas mais focadas (O1, O2, etc.), que descrevam resultados concretos de aprendizado ou decisão que o experimento deve gerar.
 
-### 3.3 Questões de pesquisa / de negócio
-Formule perguntas claras que o experimento deverá responder (Q1, Q2, etc.), em linguagem que faça sentido para os stakeholders técnicos e de negócio.
+| ID  | Objetivo                                                                                      |
+|-----|-----------------------------------------------------------------------------------------------|
+| 1  | Caracterizar padrões de engajamento (issues, PRs, interações) no período pré-morte          |
+| 2  | Identificar mudanças em atividades de desenvolvimento (commits, releases, churn) pré-morte   |
+| 3  | Avaliar indicadores de qualidade (complexidade, smells, dívida técnica) pré-morte    |
+| 4  | Determinar combinações de métricas dos três pilares que melhor explicam a probabilidade de morte |
+| 5  | Construir e validar (por meio de técnicas de machine learning) um modelo preditivo de risco de morte com antecedência, de acordo com a análise dos 3 pilares       |
 
-### 3.4 Métricas associadas (GQM)
-Associe a cada questão as métricas que serão usadas para respondê-la, com nome, definição, unidade e fonte dos dados, garantindo alinhamento entre G, Q e M.
+### 3.3 Questões
+
+| ID  | Questão                                                                                                     |
+|-----|-------------------------------------------------------------------------------------------------------------|
+| RQ1 | Quais padrões de engajamento (issues, PRs, interação) são encontrados no período pré-morte de repositórios populares?          |
+| RQ2 | Quais mudanças nas atividades de desenvolvimento (frequência de commits, releases, churn) são encontrados pré-morte? |
+| RQ3 | Quais indicadores de qualidade de código (complexidade, smells, dívida técnica) se degradam ou estabilizam antes da morte? |
+| RQ4 | Quais combinações de métricas dos três pilares explicam melhor a probabilidade de morte?                    |
+| RQ5 | É possível prever a morte com antecedência (dias ou meses) usando um modelo baseado em métricas históricas correlacionadas?  |
+
+### 3.4 Métricas
+
+| RQ  | Métrica                          | Definição                                      | Unidade          | Fonte              |
+|-----|----------------------------------|------------------------------------------------|------------------|--------------------| 
+| RQ1 | Issues abertas/mês               | Quantidade de issues abertas por mês           | count/mês        | GitHub GraphQL API |
+| RQ1 | Issues fechadas/mês              | Quantidade de issues fechadas por mês          | count/mês        | GitHub GraphQL API |
+| RQ1 | Taxa de Merge                       | PRs mergeados / PRs abertos                    | porcentagem            | GitHub GraphQL API |
+| RQ1 | Tempo até merge                  | Dias entre abertura e merge do PR              | dias             | GitHub GraphQL API |
+| RQ1 | Comentários/PR                   | Média de comentários por PR                    | count            | GitHub GraphQL API |
+| RQ1 | Delta de estrelas/mês               | Variação mensal de estrelas                    | count/mês        | GitHub GraphQL API |
+| RQ2 | Commits/mês                      | Quantidade de commits por mês                  | count/mês        | PyDriller          |
+| RQ2 | Gaps entre commits               | Dias máximos entre commits consecutivos        | dias             | PyDriller          |
+| RQ2 | Releases/mês                     | Quantidade de releases por mês                 | count/mês        | GitHub GraphQL API |
+| RQ2 | Churn de contribuidores          | (Novos − Saídas) / Total no período            | porcentagem            | PyDriller          |
+| RQ2 | Bus factor                       | % commits dos top 2 autores                    | %                | PyDriller          |
+| RQ3 | Densidade de smells              | Code smells / KLOC                             | smells/KLOC      | SonarQube          |
+| RQ3 | Complexidade ciclomática média   | Média por função                         | Complex. Ciclomática               | SonarQube          |
+| RQ3 | Dívida técnica                   | Minutos estimados de correção / KLOC           | min/KLOC         | SonarQube          |
+| RQ3 | % Duplicação                     | Linhas duplicadas / LOC total                  | %                | SonarQube          |
+| RQ4 | Índice de Engajamento     | score das métricas da RQ1            | score            | Calculado          |
+| RQ4 | Índice de Atividade       | score normalizado de métricas da RQ2            | score            | Calculado          |
+| RQ4 | Índice de Qualidade       | score normalizado de métricas da RQ3  | score            | Calculado          |
+| RQ5 | AUC-ROC*                          | Área sob curva ROC do modelo preditivo         | 0–1              | sklearn            |
+| RQ5 | F1-Score*                         | Média harmônica de precisão e recall           | 0–1              | sklearn            |
+
+*A escolha das métricas da RQ5, foi feita de acordo com o que a biblioteca disponibiliza e a necessidade do trabalho em garantir um modelo de previsão mais preciso e equilibrado.
 
 ## 4. Escopo e contexto do experimento
 
 ### 4.1 Escopo funcional / de processo (incluído e excluído)
-Explique claramente o que será coberto (atividades, artefatos, equipes, módulos) e o que ficará fora do experimento, para evitar interpretações divergentes.
+
+**Incluído:**
+- Repositórios do Top 1000 por estrelas no GitHub (data de corte T0).
+- Linguagens com suporte a SonarQube: JavaScript, TypeScript, Python, Java, Go, C#.
+- Janela temporal: 12 meses anteriores à data de corte para séries históricas.
+- Métricas de engajamento, atividade e qualidade conforme seção 3.4.
+- Repositórios classificados como mortos (>180 dias sem commits) e controles ativos pareados.
+
+**Excluído:**
+- Repositórios explicitamente arquivados pelo proprietário.
+- Forks sem desenvolvimento próprio significativo.
+- Linguagens sem suporte adequado no SonarQube.
+- Análise de discussões externas (Discord, Slack, fóruns) — fora do escopo de coleta.
 
 ### 4.2 Contexto do estudo (tipo de organização, projeto, experiência)
-Caracterize o contexto em que o estudo ocorrerá: tipo e tamanho de organização, tipo de projeto, criticidade e perfil de experiência dos participantes.
+
+| Dimensão               | Descrição                                                                 |
+|------------------------|--------------------------------------------------------------------------|
+| Tipo de organização    | Acadêmico (TCC em Engenharia de Software – PUC Minas)                    |
+| Tipo de projeto        | Pesquisa empírica observacional (mineração de repositórios)              |
+| Criticidade            | Baixa                 |
 
 ### 4.3 Premissas
-Liste as suposições consideradas verdadeiras para o plano funcionar (por exemplo, disponibilidade de ambiente, estabilidade do sistema), mesmo que não possam ser garantidas.
+
+1. A API GraphQL do GitHub permanecerá disponível e com rate limits suficientes durante a coleta.
+2. Os repositórios selecionados estarão acessíveis publicamente.
+3. O SonarQube conseguirá analisar a maioria dos repositórios nas linguagens escolhidas.
+4. Existem repositórios nos top 1000 do Github que estão a mais de 180 dias sem commits.
+5. Métricas coletadas via PyDriller refletem fielmente o histórico de commits.
 
 ### 4.4 Restrições
-Registre limitações práticas como tempo, orçamento, ferramentas, acessos ou regras organizacionais que impõem limites ao desenho.
+
+| Tipo          | Descrição                                                                 |
+|---------------|--------------------------------------------------------------------------|
+| Tempo         | Prazo de TCC limita escopo a 6 meses de execução                        |
+| Orçamento     | Uso de ferramentas gratuitas/open-source                     |
+| Infraestrutura| Execução local    |
+| Rate limits   | API GitHub: 5.000 req/hora pode exigir pausas na coleta   |
+| Armazenamento | Clonagem de repositórios limitada pelo espaço de armazenamento
 
 ### 4.5 Limitações previstas
-Explique fatores que podem prejudicar a generalização dos resultados (validez externa), como contexto muito específico ou amostra pouco representativa.
+
+- **Generalização restrita:** Resultados aplicam-se a repositórios muito populares (Top 1000); projetos menores podem ter dinâmicas distintas.
+- **Viés de linguagem:** Foco em linguagens com suporte SonarQube pode excluir ecossistemas relevantes (Rust, Kotlin).
+- **Definição de morte:** Janela de 180 dias pode incluir projetos com ciclos de release longos.
+- **Qualidade de métricas:** SonarQube pode não detectar todos os tipos de dívida técnica. Além disso a cobertura de testes depende de configuração do repositório.
+- **Snapshot temporal:** Coleta em data única (T0) pode não refletir variações sazonais ou eventos pontuais.
 
 ## 5. Stakeholders e impacto esperado
 
 ### 5.1 Stakeholders principais
-Liste os grupos ou papéis que têm interesse ou serão impactados pelo experimento (por exemplo, devs, QA, produto, gestores, clientes internos).
+
+| Stakeholder                      | Papel / Interesse                                                      |
+|----------------------------------|---------------------------------------------------------------
+| Comunidade científica   | Consumo de resultados, replicação e extensão                           |
+| Mantenedores de projetos OSS     | Uso de insights para monitorar saúde de repositórios                   |
+| Plataformas (GitHub)             | Potencial uso de métricas para features de alerta de inatividade       |
 
 ### 5.2 Interesses e expectativas dos stakeholders
-Descreva o que cada grupo espera obter do experimento (insights, evidências, validação de decisão, mitigação de risco, etc.).
+
+| Stakeholder                      | Expectativa                                                            |
+|----------------------------------|------------------------------------------------------------------------|
+| Comunidade científica            | Dataset aberto, modelo replicável e evidências estatísticas robustas    |
+| Mantenedores OSS                 | Indicadores práticos de risco e  recomendações acionáveis                |
+| Plataformas                      | Validação de métricas que possam alimentar dashboards de saúde de repos|
 
 ### 5.3 Impactos potenciais no processo / produto
-Antecipe como a execução do experimento pode afetar prazos, qualidade, carga de trabalho ou o próprio produto durante e após o estudo.
+
+- **Positivos:** Geração de dataset público, com metodologia reprodutível e modelo preditivo disponível para a comunidade.
+- **Neutros:** Estudo observacional não interfere em repositórios analisados.
+- **Riscos:** Possível sobrecarga de requisições à API (mitigado por rate-limiting) e tempo de processamento do SonarQube pode atrasar cronograma.
 
 ## 6. Riscos de alto nível, premissas e critérios de sucesso
 
 ### 6.1 Riscos de alto nível (negócio, técnicos, etc.)
-Identifique os principais riscos para negócio e tecnologia (atrasos, falhas de ambiente, indisponibilidade de dados, etc.) em nível macro.
+
+| ID  | Risco                                      | Probabilidade | Impacto | Mitigação                                      |
+|-----|--------------------------------------------|---------------|---------|------------------------------------------------|
+| R1  | API GitHub indisponível ou rate-limited    | Média         | Alto    | Implementar retries, cache e coleta em lotes   |
+| R2  | Poucos repositórios mortos no Top 1000     | Média         | Alto    | Expandir para Top 2000 se necessário           |
+| R3  | SonarQube falha em repositórios grandes    | Média         | Médio   | Limitar análise a subconjunto de arquivos      |
+| R4  | Espaço em disco insuficiente               | Baixa         | Médio   | Clonar shallow e limpar após extração          |
+| R5  | Prazo de TCC insuficiente                  | Média         | Alto    | Priorizar RQs 1–3, deixando o modelo preditivo como extra |
 
 ### 6.2 Critérios de sucesso globais (go / no-go)
-Defina as condições sob as quais o experimento será considerado útil e viável, inclusive critérios que sustentem uma decisão de seguir ou não com mudanças.
+
+| Critério                                                        | Limiar mínimo                              |
+|-----------------------------------------------------------------|--------------------------------------------|
+| Quantidade de repositórios mortos identificados                 | ≥ 30 repositórios                          |
+| Cobertura de métricas (% repositórios com dados completos)      | ≥ 80%                                      |
 
 ### 6.3 Critérios de parada antecipada (pré-execução)
-Descreva situações em que o experimento deve ser adiado ou cancelado antes de começar (falta de recursos críticos, reprovação ética, mudanças de contexto).
+
+- **Menos de 20 repositórios mortos** encontrados no Top 1000 após filtragem → reavaliar escopo ou expandir universo.
+- **API GitHub com bloqueio prolongado** (>7 dias) → buscar alternativas (GH Archive, dataset público).
+- **Mudança nos Termos de Serviço do GitHub** que impeça mineração
 
 ## 7. Modelo conceitual e hipóteses
 
