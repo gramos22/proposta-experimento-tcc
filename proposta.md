@@ -244,50 +244,79 @@ Referências ligadas aos três pilares (Engajamento, Atividades, Qualidade).
 ## 7. Modelo conceitual e hipóteses
 
 ### 7.1 Modelo conceitual do experimento
-Explique, em texto ou esquema, como você acredita que os fatores influenciam as respostas (por exemplo, "técnica A reduz defeitos em relação a B").
+O modelo conceitual do experimento considera que a morte dos repositórios é influenciada por três pilares principais: 
+
+- **Engajamento da comunidade**: A redução na abertura e fechamento de issues, na interação em pull requests e no crescimento de estrelas pode indicar perda de interesse da comunidade.
+- **Atividades de desenvolvimento**: Diminuição na frequência de commits, aumento nos gaps entre commits e redução no número de releases podem significar que está havendo um esforço de manutenção.
+- **Qualidade do código**: Aumento na densidade de code smells, complexidade e dívida técnica pode indicar a degradação técnica que desestimula contribuições enquanto aumenta as issues.
 
 ### 7.2 Hipóteses formais (H0, H1)
-Formule explicitamente as hipóteses nulas e alternativas para cada questão principal, incluindo a direção esperada do efeito quando fizer sentido.
+As hipóteses são formuladas para cada pilar:
+
+- **Engajamento**:
+  - H0E1: Não há diferença significativa na razão de issues abertas/fechadas nos últimos 90 dias pré-morte versus controles ativos.
+  - H1E1: Há diferença significativa (menor fechamento ou menor abertura) nessa razão nos repositórios mortos.
+
+- **Atividades de desenvolvimento**:
+  - H0A1: A frequência média de commits/mês nos 3 últimos meses pré-morte não difere de controles ativos pareados.
+  - H1A1: Repositórios mortos apresentam queda significativa na frequência de commits.
+
+- **Qualidade do código**:
+  - H0Q1: Métricas de complexidade média (ex.: complexidade ciclomática por função) não diferem entre mortos e ativos.
+  - H1Q1: Repositórios mortos exibem aumento de complexidade ou pull-requests de refatorações que nunca são aprovados.
 
 ### 7.3 Nível de significância e considerações de poder
-Defina o nível de significância (por exemplo, α = 0,05) e comente o que se espera em termos de poder estatístico, relacionando-o ao tamanho de amostra planejado.
+O nível de significância adotado será α = 0,05. O poder estatístico será avaliado para garantir que o tamanho amostral seja suficiente para detectar diferenças significativas.
 
 ## 8. Variáveis, fatores, tratamentos e objetos de estudo
 
 ### 8.1 Objetos de estudo
-Descreva o que será efetivamente manipulado ou analisado (módulos de código, requisitos, tarefas, casos de teste, issues, etc.).
+Os objetos de estudo são repositórios open-source populares (Top 1000 por estrelas no GitHub) classificados como "mortos" (sem commits por >180 dias) e seus controles ativos pareados.
 
 ### 8.2 Sujeitos / participantes (visão geral)
-Caracterize em alto nível quem serão os participantes (desenvolvedores, testadores, estudantes, etc.), sem ainda entrar em detalhes de seleção.
+Os participantes indiretos são os mantenedores e contribuidores dos repositórios analisados visto que os dados são públicos e coletados de repositórios GitHub.
 
 ### 8.3 Variáveis independentes (fatores) e seus níveis
-Liste os fatores que serão manipulados (por exemplo, técnica, ferramenta, processo) e indique os níveis de cada um (A/B, X/Y, alto/baixo).
+- **Status de morte**: Morto (1) ou ativo (0).
+- **Linguagem principal**: JavaScript, Python, Java, Go, C#, TypeScript.
+- **Idade do projeto**: Dias desde o primeiro commit.
+- **Tamanho**: LOC total, número de arquivos.
 
 ### 8.4 Tratamentos (condições experimentais)
-Descreva claramente cada condição de experimento (grupo controle, tratamento 1, tratamento 2, etc.) e o que distingue uma da outra.
+- **Grupo controle**: Repositórios ativos pareados em relação à tamanho com os mortos.
+- **Grupo experimental**: Repositórios classificados como mortos.
 
 ### 8.5 Variáveis dependentes (respostas)
-Informe as medidas de resultado que você observará (por exemplo, número de defeitos, esforço em horas, tempo de conclusão, satisfação).
+- **Engajamento**: Issues abertas/fechadas, taxa de merge, comentários por PR.
+- **Atividades**: Commits/mês, releases/mês, churn de contribuidores.
+- **Qualidade**: Densidade de code smells, complexidade ciclomática, dívida técnica.
 
 ### 8.6 Variáveis de controle / bloqueio
-Liste fatores que você não está estudando diretamente, mas que serão mantidos constantes ou usados para formar blocos (por exemplo, experiência, tipo de tarefa).
+- **Linguagem**: Controlada para evitar viés de ecossistema.
+- **Tamanho do repositório**: Pareamento por LOC.
+- **Idade do repositório**: Pareamento por tempo desde o primeiro commit.
 
 ### 8.7 Possíveis variáveis de confusão conhecidas
-Identifique fatores que podem distorcer os resultados (como diferenças de contexto, motivação ou carga de trabalho) e que você pretende monitorar.
+- **Mudança de mantenedores**: Pode afetar engajamento e atividades.
+- **Eventos externos**: Ex.: mudanças na comunidade, no ecossistema, ou até mesmo venda do produto para uma iniciativa privada.
 
 ## 9. Desenho experimental
 
 ### 9.1 Tipo de desenho (completamente randomizado, blocos, fatorial, etc.)
-Indique qual tipo de desenho será utilizado e justifique brevemente por que ele é adequado ao problema e às restrições.
+O desenho será observacional com pareamento entre repositórios mortos e controles ativos. O pareamento será realizado por linguagem, tamanho, idade e popularidade (estrelas).
 
 ### 9.2 Randomização e alocação
-Explique o que será randomizado (sujeitos, tarefas, ordem de tratamentos) e como a randomização será feita na prática (ferramentas, procedimentos).
+Não se aplica randomização, pois o estudo é observacional. O pareamento será feito para minimizar viés de seleção.
 
 ### 9.3 Balanceamento e contrabalanço
-Descreva como você garantirá que os grupos fiquem comparáveis (balanceamento) e como lidará com efeitos de ordem ou aprendizagem (contrabalanço).
+O balanceamento será garantido pelo pareamento de controles ativos com características similares aos repositórios mortos. Não há necessidade de contrabalanço, pois não há ordem de tratamentos.
 
 ### 9.4 Número de grupos e sessões
-Informe quantos grupos existirão e quantas sessões ou rodadas cada sujeito ou grupo irá executar, com uma breve justificativa.
+Haverá dois grupos principais:
+- **Grupo experimental**: Repositórios mortos (>180 dias sem commits).
+- **Grupo controle**: Repositórios ativos pareados.
+
+Cada grupo será analisado em uma única sessão de coleta e análise.
 
 ## 10. População, sujeitos e amostragem
 
