@@ -321,50 +321,113 @@ Cada grupo será analisado em uma única sessão de coleta e análise.
 ## 10. População, sujeitos e amostragem
 
 ### 10.1 População-alvo
-Descreva qual é a população real que você deseja representar com o experimento (por exemplo, "desenvolvedores Java de times de produto web").
+A população-alvo são repositórios open-source hospedados no GitHub que atingiram popularidade significativa (medida por estrelas), mas que apesar de terem alcançado sucesso inicial, morreram.
 
-### 10.2 Critérios de inclusão de sujeitos
-Especifique os requisitos mínimos para um participante ser elegível (experiência, conhecimento, papel, disponibilidade, etc.).
+### 10.2 Critérios de inclusão de repositórios
+- Pertencer ao Top 1000 repositórios por número de estrelas no GitHub na data de corte T0.
+- Linguagem principal com suporte adequado no SonarQube (JavaScript, TypeScript, Python, Java, Go, C#).
+- Repositório público e acessível para clonagem.
+- Histórico de commits disponível para os 12 meses anteriores a T0.
+- Para grupo morto: sem commits no branch principal por >180 dias consecutivos.
+- Para grupo controle: pelo menos 1 commit nos últimos 30 dias.
 
-### 10.3 Critérios de exclusão de sujeitos
-Liste condições que impedem participação (conflitos de interesse, falta de skills essenciais, restrições legais ou éticas).
+### 10.3 Critérios de exclusão de repositórios
+- Repositórios arquivados.
+- Forks.
+- Repositórios de documentação.
+- Repositórios com commits corrompidos.
 
 ### 10.4 Tamanho da amostra planejado (por grupo)
-Defina quantos participantes você pretende ter no total e em cada grupo, relacionando a decisão com poder, recursos e contexto.
+| Grupo                | Tamanho esperado | Justificativa                                      |
+|----------------------|------------------|----------------------------------------------------|
+| Repositórios mortos  | ≥ 30             | Mínimo para análises estatísticas robustas         |
+| Repositórios ativos (controle) | 30–60  | Relação 1:1 ou 1:2 com mortos                   |
+| **Total estimado**   | 60–90            | Balanceado estatístico         |
+
+Caso o Top 1000 não forneça ≥30 repositórios mortos, o universo será expandido para Top 5000.
 
 ### 10.5 Método de seleção / recrutamento
-Explique como os participantes serão escolhidos (amostra de conveniência, sorteio, convite aberto, turma de disciplina, time específico).
+1. **Extração inicial:** Query GraphQL para obter Top 1000 repositórios ordenados por estrelas.
+2. **Classificação:** Script automatizado para identificar repositórios mortos (>180 dias sem commits).
+3. **Pareamento:** Para cada repositório morto, serão selecionados 1–2 controles ativos pareados por:
+   - Linguagem principal (exata)
+   - Faixa de estrelas (±10%)
+   - Idade do repositório (±1 ano)
+   - Tamanho aproximado (LOC ±20%)
 
 ### 10.6 Treinamento e preparação dos sujeitos
-Descreva qual treinamento ou material preparatório será fornecido para nivelar entendimento e reduzir vieses por falta de conhecimento.
+Não aplicável. O estudo é observacional e os "sujeitos" são repositórios de software. A preparação consiste na configuração do pipeline de coleta e análise.
 
 ## 11. Instrumentação e protocolo operacional
 
 ### 11.1 Instrumentos de coleta (questionários, logs, planilhas, etc.)
-Liste todos os instrumentos que serão usados para coletar dados (arquivos, formulários, scripts, ferramentas), com uma breve descrição do papel de cada um.
+
+| Instrumento                  | Tipo           | Descrição / Papel                                              |
+|------------------------------|----------------|----------------------------------------------------------------|
+| GitHub GraphQL API           | API            | Coleta de metadados: issues, PRs, stars, forks, releases       |
+| PyDriller                    | Biblioteca Python | Extração de histórico de commits, autores, diffs, churn     |
+| SonarQube (Community Edition)| Ferramenta     | Análise estática: smells, complexidade, dívida técnica         |
+| Scripts Python        | Scripts        | Transformação e normalização de métricas         |
+| Planilha de rastreamento     | Excel      | Controle de repositórios processados, status e erros           |
+| Arquivo de configuração de ambiente      | JSON      | Parâmetros do experimento (data T0, thresholds, linguagens)    |
+| Logs de execução             | Arquivos .log  | Registro de erros, warnings e progresso do pipeline            |
 
 ### 11.2 Materiais de suporte (instruções, guias)
-Descreva as instruções escritas, guias rápidos, slides ou outros materiais que serão fornecidos a participantes e administradores do experimento.
+- **README do repositório:** Instruções para configurar ambiente e executar pipeline.
+- **Documentação de métricas:** Definição de cada métrica coletada.
+- **Checklist de validação:** Verificação de integridade dos dados coletados.
 
 ### 11.3 Procedimento experimental (protocolo – visão passo a passo)
-Escreva, em ordem, o que acontecerá na operação (do convite ao encerramento), de modo que alguém consiga executar o experimento seguindo esse roteiro.
+
+![Metodologia_Imagem_1](Metodologia-1.png)
+
+![Metodologia_Imagem_2](Metodologia-2.png)
 
 ### 11.4 Plano de piloto (se haverá piloto, escopo e critérios de ajuste)
-Indique se um piloto será realizado, com que participantes e objetivos, e defina que tipo de ajuste do protocolo poderá ser feito com base nesse piloto.
+
+**Haverá piloto:** Sim
+
+| Aspecto              | Descrição                                                      |
+|----------------------|----------------------------------------------------------------|
+| Escopo               | Top 100 repositórios (subconjunto do universo)                 |
+| Objetivo             | Validar pipeline, identificar gargalos e ajustar thresholds    |
+| Duração estimada     | 1–2 semanas                                                    |
+| Critérios de ajuste  | Ajustar rate limits, revisar critérios de exclusão, calibrar SonarQube |
+| Decisão go/no-go     | Piloto bem-sucedido se ≥5 repositórios mortos identificados e processados |
 
 ## 12. Plano de análise de dados (pré-execução)
 
 ### 12.1 Estratégia geral de análise (como responderá às questões)
-Explique, em alto nível, como os dados coletados serão usados para responder cada questão de pesquisa ou de negócio.
+
+| RQ  | Estratégia de análise                                                                 |
+|-----|--------------------------------------------------------------------------------------|
+| RQ1 | Estatística descritiva (média, mediana, desvio padrão) e comparação entre grupos (mortos vs ativos) para métricas de engajamento. Visualização com boxplots e gráficos de linha. |
+| RQ2 | Análise descritiva de commits, releases e churn. Comparação de medianas entre grupos. Gráficos de tendência temporal. |
+| RQ3 | Comparação de métricas de qualidade (smells, complexidade, dívida) entre grupos. Análise de correlação entre métricas. |
+| RQ4 | Correlação entre métricas dos três pilares e status de morte. Identificação das métricas mais associadas à morte. |
+| RQ5 | Treinamento de modelo de classificação (Random Forest). Avaliação por AUC-ROC e F1-Score. |
 
 ### 12.2 Métodos estatísticos planejados
-Liste os principais testes ou técnicas estatísticas que pretende usar (por exemplo, t-teste, ANOVA, testes não paramétricos, regressão).
+
+| Tipo de análise              | Método                                      | Aplicação                                  |
+|------------------------------|---------------------------------------------|--------------------------------------------|
+| Estatística descritiva       | Média, mediana, desvio padrão, quartis      | Caracterizar cada métrica por grupo        |
+| Comparação de 2 grupos       | Mann-Whitney U                              | Comparar mortos vs ativos (não-paramétrico)|
+| Correlação                   | Spearman                                    | Associação entre métricas contínuas        |
+| Classificação (ML)           | Regressão Logística                               | Modelo preditivo de morte                  |
 
 ### 12.3 Tratamento de dados faltantes e outliers
-Defina previamente as regras para lidar com dados ausentes e valores extremos, evitando decisões oportunistas após ver os resultados.
+
+**Dados faltantes:**
+- Repositórios com muitas métricas ausentes (>30%): exclusão do repositório.
+- Para variáveis com poucos valores ausentes: imputação pela mediana do grupo.
+
+**Outliers:**
+- Identificação visual por boxplots.
+- Documentar outliers identificados e decidir caso a caso se devem ser mantidos ou removidos.
 
 ### 12.4 Plano de análise para dados qualitativos (se houver)
-Descreva como você tratará dados qualitativos (entrevistas, comentários, observações), especificando a técnica de análise (codificação, categorias, etc.).
+O estudo é predominantemente quantitativo. Não há coleta sistemática de dados qualitativos.
 
 ## 13. Avaliação de validade (ameaças e mitigação)
 
