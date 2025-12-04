@@ -584,7 +584,7 @@ Não é necessário.
 | Rito | Frequência | Participantes | Objetivo |
 |------|------------|---------------|----------|
 | Reunião de orientação | Quinzenal | Gabriel, Danilo | Acompanhar progresso, resolver bloqueios |
-| Checkpoint de fase | A cada marco | Gabriel, Danilo | Validar entregáveis, decidir go/no-go |
+| Checkpoint de fase | A cada marco | Gabriel, Danilo | Validar entregáveis |
 | Revisão do piloto | Após piloto | Gabriel, Danilo | Avaliar resultados, ajustar plano |
 
 ### 17.3 Processo de controle de mudanças no plano
@@ -633,12 +633,12 @@ Não é necessário.
 1. **requirements.txt** - Dependências Python com versões fixas
 2. **README.md** - Instruções passo a passo para execução
 3. **config.json** - Parâmetros do experimento (T0, thresholds)
-4. **Dataset final** - Dados anonimizados em formato CSV/Parquet
+4. **Dataset final** - Dados anonimizados em formato CSV
 5. **Scripts documentados** - Comentários explicativos no código
 
 **Disponibilização:**
 - Repositório público no GitHub após defesa
-- Dataset no Zenodo ou similar para DOI permanente
+- Registrar dataset para DOI permanente
 
 ## 19. Plano de comunicação
 
