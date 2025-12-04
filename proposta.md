@@ -432,96 +432,272 @@ O estudo é predominantemente quantitativo. Não há coleta sistemática de dado
 ## 13. Avaliação de validade (ameaças e mitigação)
 
 ### 13.1 Validade de conclusão
-Liste ameaças que podem comprometer a robustez das conclusões estatísticas (baixo poder, violação de suposições, erros de medida) e como pretende mitigá-las.
+| Ameaça | Descrição | Mitigação |
+|--------|-----------|----------|
+| Baixo poder estatístico | Amostra pequena de repositórios mortos pode não detectar diferenças reais | Garantir mínimo de 30 repositórios mortos e expandir universo se necessário |
+| Teste estatístico não atende às condições | Dados podem não seguir distribuição esperada | Usar testes não-paramétricos |
+| Erros de medida | Métricas podem conter ruído ou imprecisões | Validar métricas no piloto e documentar limitações das ferramentas |
 
 ### 13.2 Validade interna
-Identifique ameaças relacionadas a causas alternativas para os efeitos observados (history, maturation, selection, etc.) e explique suas estratégias de controle.
+| Ameaça | Descrição | Mitigação |
+|--------|-----------|----------|
+| Seleção | Repositórios mortos podem ter características distintas não controladas | Pareamento por linguagem, tamanho, idade e estrelas |
+| Contexto histórico do repositório | Eventos externos como mudança de licença podem afetar resultados | Documentar eventos conhecidos |
+| Falsas premissas | Variáveis não medidas podem explicar a morte | Incluir variáveis de controle e reconhecer limitação |
 
 ### 13.3 Validade de constructo
-Reflita se as medidas escolhidas realmente representam os conceitos de interesse e descreva como você reduzirá ambiguidades de interpretação.
+| Ameaça | Descrição | Mitigação |
+|--------|-----------|----------|
+| Definição de morte | 180 dias pode não capturar todos os casos de abandono | Justificar com literatura (Dey & Mockus 2020) e fazer análise de sensibilidade com outros thresholds |
+| Métricas de qualidade | SonarQube pode não refletir qualidade percebida | Usar múltiplas métricas e documentar as limitações |
+| Engajamento incompleto | Não captura discussões externas | Reconhecer como limitação explícita |
 
 ### 13.4 Validade externa
-Discuta em que contextos os resultados podem ser generalizados e quais diferenças de cenário podem limitar essa generalização.
+| Ameaça | Descrição | Mitigação |
+|--------|-----------|----------|
+| Generalização restrita | Resultados aplicam-se apenas a repositórios muito populares | Explicitar contexto (Top 1000) e sugerir replicação em outros contextos |
+| Viés de linguagem | Foco em linguagens com suporte SonarQube | Documentar linguagens incluídas e discutir o impacto desse ponto |
+| Contexto temporal | Coleta em momento único pode não refletir padrões gerais | Registrar data de coleta e sugerir estudos longitudinais |
 
 ### 13.5 Resumo das principais ameaças e estratégias de mitigação
-Faça uma síntese das ameaças mais críticas e das ações planejadas, de preferência em forma de lista ou tabela simples.
+
+| Prioridade | Ameaça | Estratégia |
+|------------|--------|------------|
+| Alta | Poucos repositórios mortos | Expandir para Top 5000 se necessário |
+| Alta | Definição arbitrária de morte | Justificar com literatura e fazer análise de sensibilidade |
+| Média | Confundidores não medidos | Pareamento cuidadoso e reconhecer limitação |
+| Média | Generalização limitada | Explicitar contexto e sugerir replicações |
+| Baixa | Erros de medida | Validar no piloto e usar múltiplas fontes |
 
 ## 14. Ética, privacidade e conformidade
 
 ### 14.1 Questões éticas (uso de sujeitos, incentivos, etc.)
-Descreva potenciais questões éticas (pressão para participar, uso de estudantes, incentivos, riscos de exposição) e como serão tratadas.
+O estudo utiliza exclusivamente dados públicos de repositórios GitHub, sem interação direta com participantes humanos. Não há:
+- Coleta de dados sensíveis ou pessoais
+- Incentivos financeiros ou pressão para participação
+- Manipulação de repositórios ou interferência em projetos
+
+**Considerações éticas:**
+- Respeito aos Termos de Serviço do GitHub
+- Uso responsável da API (rate limiting)
+- Não há exposição negativa de projetos ou contribuidores específicos
 
 ### 14.2 Consentimento informado
-Explique como os participantes serão informados sobre objetivos, riscos, benefícios e como registrarão seu consentimento.
+Não se aplica.
 
 ### 14.3 Privacidade e proteção de dados
-Indique que dados pessoais serão coletados, como serão protegidos (anonimização, pseudoanonimização, controle de acesso) e por quanto tempo serão mantidos.
+**Dados coletados:**
+- Métricas agregadas em nível de repositório
+- Nomes de usuários apenas para cálculo de métricas (ex.: contagem de contribuidores)
+
+**Proteção:**
+- Análises reportadas em nível agregado, sem identificação individual
+- Nomes de repositórios podem ser mencionados por serem públicos
+- Dados armazenados localmente durante o estudo
+- Dataset final disponibilizado sem informações que permitam identificação de indivíduos
 
 ### 14.4 Aprovações necessárias (comitê de ética, jurídico, DPO, etc.)
-Liste órgãos ou pessoas que precisam aprovar o experimento (comitê de ética, jurídico, DPO, gestores) e o status atual dessas aprovações.
+Não é necessário.
 
 ## 15. Recursos, infraestrutura e orçamento
 
 ### 15.1 Recursos humanos e papéis
-Identifique os membros da equipe do experimento e descreva brevemente o papel e responsabilidade de cada um.
+| Membro | Papel | Responsabilidades |
+|--------|-------|-------------------|
+| Gabriel Ramos Ferreira | Pesquisador principal | Execução do experimento, coleta, análise e documentação |
+| Danilo Maia | Orientador | Revisão metodológica, validação de resultados, orientação |
 
 ### 15.2 Infraestrutura técnica necessária
-Liste ambientes, servidores, ferramentas, repositórios e integrações que devem estar disponíveis para executar o experimento.
+| Recurso | Descrição | Status |
+|---------|-----------|--------|
+| Computador pessoal | Mínimo 16GB RAM, 500GB SSD | Disponível |
+| Python 3.10+ | Ambiente de análise | Disponível |
+| GitHub Personal Access Token | Autenticação para API GraphQL | Disponível |
+| SonarQube Community Edition | Análise estática de código | Instalado em docker |
+| Git | Clonagem de repositórios | Disponível |
+| VS Code / Jupyter | Desenvolvimento e análise | Disponível |
 
 ### 15.3 Materiais e insumos
-Relacione materiais físicos ou digitais necessários (máquinas, licenças, formulários, dispositivos) que precisam estar prontos antes da operação.
+| Material | Tipo | Status |
+|----------|------|--------|
+| Bibliotecas Python (pandas, scipy, sklearn, PyDriller) | Software | A instalar |
+| Espaço em disco | Hardware | Disponível |
+| Conexão internet estável | Infraestrutura | Disponível |
+| Repositório GitHub para código | Versionamento | A criar |
 
 ### 15.4 Orçamento e custos estimados
-Faça uma estimativa dos principais custos envolvidos (horas de pessoas, serviços, licenças, infraestrutura) e a fonte de financiamento.
+| Item | Custo estimado | Observação |
+|------|----------------|------------|
+| Ferramentas | R$ 0 | Todas open-source/gratuitas |
+| Infraestrutura | R$ 0 | Uso de recursos próprios |
+| GitHub API | R$ 0 | Plano gratuito suficiente |
+| Horas do pesquisador | ~200h | Custo de oportunidade |
+| **Total** | **R$ 0** | Projeto sem custos diretos |
 
 ## 16. Cronograma, marcos e riscos operacionais
 
 ### 16.1 Macrocronograma (até o início da execução)
-Defina as principais datas e marcos (conclusão do plano, piloto, revisão, início da operação) com uma visão de tempo realista.
+| Fase | Atividade | Início | Fim | Duração |
+|------|-----------|--------|-----|----------|
+| 1 | Finalização do plano experimental | Jun/2026 | Jun/2026 | 2 semanas |
+| 2 | Configuração do ambiente | Jul/2026 | Jul/2026 | 1 semana |
+| 3 | Piloto (Top 100) | Jul/2026 | Jul/2026 | 2 semanas |
+| 4 | Ajustes pós-piloto | Ago/2026 | Ago/2026 | 1 semana |
+| 5 | Coleta completa | Ago/2026 | Set/2026 | 4 semanas |
+| 6 | Análise de dados | Set/2026 | Out/2026 | 4 semanas |
+| 7 | Redação do TCC | Out/2026 | Nov/2026 | 4 semanas |
+| 8 | Revisão e entrega | Nov/2026 | Dez/2026 | 2 semanas |
 
 ### 16.2 Dependências entre atividades
-Indique quais atividades dependem de outras para começar (por exemplo, treinamento após aprovação ética), deixando essas dependências claras.
+```
+[Plano] → [Ambiente] → [Piloto] → [Ajustes] → [Coleta] → [Análise] → [Redação] → [Entrega]
+```
+
+| Atividade | Depende de |
+|-----------|------------|
+| Configuração do ambiente | Plano aprovado |
+| Piloto | Ambiente configurado |
+| Coleta completa | Piloto bem-sucedido |
+| Análise | Coleta finalizada |
+| Redação | Análise concluída |
 
 ### 16.3 Riscos operacionais e plano de contingência
-Liste riscos ligados a cronograma, disponibilidade de pessoas ou recursos, e descreva ações de contingência caso esses riscos se materializem.
+| Risco | Probabilidade | Impacto | Contingência |
+|-------|---------------|---------|---------------|
+| Atraso na coleta por rate limits | Média | Médio | Implementar cache; coleta em horários de baixa demanda |
+| SonarQube falha em repos grandes | Média | Médio | Analisar apenas arquivos principais e limitar o escopo |
+| Poucos repositórios mortos | Média | Alto | Expandir para Top 5000 |
+| Problemas de saúde/pessoais | Baixa | Alto | Folga de 2 semanas no cronograma |
+| Perda de dados | Baixa | Alto | Backup diário em nuvem e HD externo |
 
 ## 17. Governança do experimento
 
 ### 17.1 Papéis e responsabilidades formais
-Defina quem decide, quem executa, quem revisa e quem apenas deve ser informado, deixando claro o fluxo de responsabilidade.
+| Papel | Pessoa | Responsabilidade |
+|-------|--------|------------------|
+| Executor | Gabriel Ramos | Implementar pipeline, coletar dados, executar análises |
+| Decisor | Gabriel Ramos | Aprovar mudanças de escopo menores |
+| Revisor | Danilo Maia | Validar metodologia, revisar resultados |
+| Aprovador | Danilo Maia | Aprovar mudanças significativas no plano |
 
 ### 17.2 Ritos de acompanhamento pré-execução
-Descreva as reuniões, checkpoints e revisões previstos antes da execução, incluindo frequência e participantes.
+| Rito | Frequência | Participantes | Objetivo |
+|------|------------|---------------|----------|
+| Reunião de orientação | Quinzenal | Gabriel, Danilo | Acompanhar progresso, resolver bloqueios |
+| Checkpoint de fase | A cada marco | Gabriel, Danilo | Validar entregáveis, decidir go/no-go |
+| Revisão do piloto | Após piloto | Gabriel, Danilo | Avaliar resultados, ajustar plano |
 
 ### 17.3 Processo de controle de mudanças no plano
-Explique como mudanças no desenho ou no escopo do experimento serão propostas, analisadas, aprovadas e registradas.
+**Mudanças menores** (ajustes de threshold, inclusão de métrica):
+1. Documentar mudança no histórico de revisões
+2. Informar orientador na próxima reunião
+
+**Mudanças significativas** (alteração de RQs, expansão de escopo):
+1. Propor mudança por escrito
+2. Discutir com orientador
+3. Obter aprovação formal
+4. Atualizar documento e versão
 
 ## 18. Plano de documentação e reprodutibilidade
 
 ### 18.1 Repositórios e convenções de nomeação
-Indique onde o plano, instrumentos, scripts e dados (futuros) serão armazenados e quais convenções de nomes serão usadas.
+**Repositório principal:** `github.com/gramos22/tcc-morte-repositorios`
+
+**Estrutura de pastas:**
+```
+/
+├── docs/              # Documentação e plano experimental
+├── scripts/           # Scripts de coleta e análise
+├── data/              # Dados coletados (raw e processados)
+├── notebooks/         # Jupyter notebooks de análise
+├── results/           # Resultados e visualizações
+└── README.md          # Instruções gerais
+```
+
+**Convenções de nomeação:**
+- Scripts: `snake_case.py` (ex.: `collect_github_metrics.py`)
+- Dados: `YYYY-MM-DD_descricao.csv` (ex.: `2026-02-15_repos_mortos.csv`)
+- Notebooks: `NN_descricao.ipynb` (ex.: `01_exploratory_analysis.ipynb`)
 
 ### 18.2 Templates e artefatos padrão
-Liste os modelos (questionários, formulários, checklists, scripts) que serão usados e onde podem ser encontrados.
+| Artefato | Localização | Descrição |
+|----------|-------------|----------|
+| Plano experimental | `/docs/proposta.md` | Este documento |
+| Script de coleta GitHub | `/scripts/collect_github.py` | Coleta via GraphQL API |
+| Script PyDriller | `/scripts/collect_commits.py` | Extração de histórico |
+| Notebook de análise | `/notebooks/` | Análises estatísticas |
+| Checklist de validação | `/docs/checklist.md` | Verificação de dados |
 
 ### 18.3 Plano de empacotamento para replicação futura
-Descreva o que será organizado desde já (documentos, scripts, instruções) para facilitar a replicação do experimento por outras equipes ou no futuro.
+**Artefatos para replicação:**
+1. **requirements.txt** - Dependências Python com versões fixas
+2. **README.md** - Instruções passo a passo para execução
+3. **config.json** - Parâmetros do experimento (T0, thresholds)
+4. **Dataset final** - Dados anonimizados em formato CSV/Parquet
+5. **Scripts documentados** - Comentários explicativos no código
+
+**Disponibilização:**
+- Repositório público no GitHub após defesa
+- Dataset no Zenodo ou similar para DOI permanente
 
 ## 19. Plano de comunicação
 
 ### 19.1 Públicos e mensagens-chave pré-execução
-Liste os grupos que precisam ser comunicados e quais mensagens principais devem receber (objetivos, escopo, datas, impactos esperados).
+| Público | Mensagem-chave | Momento |
+|---------|----------------|----------|
+| Orientador | Status do projeto, bloqueios, decisões necessárias | Contínuo |
+| Banca avaliadora | Objetivos, metodologia, resultados esperados | Defesa |
+| Comunidade científica | Contribuições, dataset, modelo preditivo | Pós-defesa |
 
 ### 19.2 Canais e frequência de comunicação
-Defina por quais canais (e-mail, reuniões, Slack/Teams, etc.) e com que frequência as comunicações serão feitas.
+| Canal | Uso | Frequência |
+|-------|-----|------------|
+| E-mail | Comunicações formais, envio de documentos | Conforme necessidade |
+| Reuniões presenciais/online | Orientação, revisões | Quinzenal |
+| GitHub | Acompanhamento de progresso, código | Contínuo |
+| WhatsApp/Teams | Dúvidas rápidas, agendamentos | Conforme necessidade |
 
 ### 19.3 Pontos de comunicação obrigatórios
-Especifique os eventos que exigem comunicação formal (aprovação do plano, mudanças relevantes, adiamentos, cancelamentos).
+| Evento | Ação | Destinatário |
+|--------|------|---------------|
+| Aprovação do plano | E-mail formal | Orientador |
+| Conclusão do piloto | Relatório + reunião | Orientador |
+| Mudança significativa de escopo | Proposta escrita + reunião | Orientador |
+| Bloqueio crítico | Comunicação imediata | Orientador |
+| Conclusão da coleta | Relatório de status | Orientador |
+| Entrega final | Documento completo | Orientador + Banca |
 
 ## 20. Critérios de prontidão para execução (Definition of Ready)
 
 ### 20.1 Checklist de prontidão (itens que devem estar completos)
-Liste os itens que precisam estar finalizados e aprovados (plano, instrumentos, aprovação ética, recursos, comunicação) para autorizar o início da operação.
+
+**Documentação:**
+- [ ] Plano experimental revisado e aprovado pelo orientador
+- [ ] Definições operacionais de todas as métricas documentadas
+- [ ] Critérios de inclusão/exclusão finalizados
+
+**Infraestrutura:**
+- [ ] Ambiente Python configurado com todas as dependências
+- [ ] GitHub Personal Access Token configurado e testado
+- [ ] SonarQube instalado e funcionando
+- [ ] Espaço em disco suficiente (~100GB)
+- [ ] Repositório Git criado e estruturado
+
+**Validação:**
+- [ ] Piloto executado com sucesso (≥5 repositórios mortos processados)
+- [ ] Scripts de coleta testados e funcionando
+- [ ] Métricas extraídas corretamente no piloto
+
+**Planejamento:**
+- [ ] Cronograma detalhado definido
+- [ ] Riscos identificados e mitigações planejadas
+- [ ] Backup e versionamento configurados
 
 ### 20.2 Aprovações finais para iniciar a operação
-Indique quem precisa dar o "ok final" (nomes ou cargos) e como esse aceite será registrado antes da execução começar.
+| Aprovador | Critério | Registro |
+|-----------|----------|----------|
+| Gabriel Ramos | Checklist 100% completo | Commit no repositório |
+| Danilo Maia | Plano experimental aprovado | E-mail de confirmação |
+| Danilo Maia | Resultados do piloto satisfatórios | Ata de reunião |
+
+**Condição de início:** Todos os itens do checklist marcados e aprovações registradas.
